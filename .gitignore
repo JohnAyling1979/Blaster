@@ -1,0 +1,35 @@
+# Unreal Engine 5 C++ Project .gitignore
+
+# Compiled output and editor data
+Binaries/
+Build/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# IDE files and settings
+.vs/
+.idea/
+.vscode/
+*.code-workspace
+*.suo
+*.sdf
+
+# macOS specific files
+.DS_Store
+Thumbs.db
+
+# Executables and logs
+*.exe
+*.out
+*.app
+*.log
+*.pch
+*.gch
+*.obj
+*.o
+*.slo
+*.lo
+
+# Git files
+.gitattributes
