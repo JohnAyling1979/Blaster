@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SphereComponent.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -24,7 +25,12 @@ class BLASTER_API AWeapon : public AActor
 public:	
 	AWeapon();
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void ShowPickupWidget(bool bShowWidget);
+	void SetWeaponState(EWeaponState State);
+
+	FORCEINLINE EWeaponState GetWeaponState() const { return WeaponState; }
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
@@ -45,7 +51,7 @@ protected:
 		int32 OtherBodyIndex
 	);
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
@@ -56,4 +62,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickupWidget;
+
+	UFUNCTION()
+	void OnRep_WeaponState();
 };

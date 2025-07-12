@@ -1,6 +1,9 @@
 #include "CombatComponent.h"
+#include "Blaster/Weapom/Weapon.h"
+#include "Blaster/Character/BlasterCharacter.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Components/SphereComponent.h"
 
-// Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -8,7 +11,6 @@ UCombatComponent::UCombatComponent()
 }
 
 
-// Called when the game starts
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -17,10 +19,24 @@ void UCombatComponent::BeginPlay()
 }
 
 
-// Called every frame
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+}
+
+void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if (!Character || !WeaponToEquip) return;
+
+	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
+
+	if (HandSocket)
+	{
+		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+	}
+	EquippedWeapon->SetOwner(Character);
 }
 
