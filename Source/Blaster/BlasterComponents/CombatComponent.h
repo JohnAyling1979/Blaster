@@ -20,10 +20,16 @@ public:
 	friend class ABlasterCharacter;
 protected:
 	virtual void BeginPlay() override;
+	void SetAiming(bool bIsAming);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetAiming(bool bIsAiming);
 private:
 	class ABlasterCharacter* Character;
 
 	UPROPERTY(Replicated)
 	class AWeapon* EquippedWeapon;
+
+	UPROPERTY(Replicated)
+	bool bAiming;
 };
