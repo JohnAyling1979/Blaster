@@ -9,6 +9,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Blaster/BlasterComponents/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -67,6 +68,8 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	AimOffset(DeltaTime);
 }
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -167,6 +170,36 @@ void ABlasterCharacter::AimButtonReleased()
 	{
 		Combat->SetAiming(false);
 	}
+}
+
+void ABlasterCharacter::AimOffset(float DeltaTime)
+{
+	if (!Controller || !Combat || !Combat->EquippedWeapon)
+	{
+		return;
+	}
+
+	FVector Velocity = GetVelocity();
+	Velocity.Z = 0.0f;
+	float Speed = Velocity.Size();
+	bool bIsInAir = GetCharacterMovement()->IsFalling();
+
+	if (Speed == 0.0f && !bIsInAir)
+	{
+		FRotator CurrentAimRotation = FRotator(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+		FRotator DeltaAimRotator = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
+
+		AO_Yaw = DeltaAimRotator.Yaw;
+		bUseControllerRotationYaw = false;
+	}
+	if (Speed > 0.0f || bIsInAir)
+	{
+		StartingAimRotation = FRotator(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+		AO_Yaw = 0.0f;
+		bUseControllerRotationYaw = true;
+	}
+
+	AO_Pitch = GetBaseAimRotation().Pitch;
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
