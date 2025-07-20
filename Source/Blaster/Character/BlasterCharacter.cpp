@@ -200,6 +200,11 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 	}
 
 	AO_Pitch = GetBaseAimRotation().Pitch;
+
+	if (AO_Pitch > 90.0f)
+	{
+		AO_Pitch = AO_Pitch - 360.0f; // Convert to negative pitch
+	}
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
