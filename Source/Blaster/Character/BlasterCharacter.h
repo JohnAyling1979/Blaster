@@ -21,6 +21,7 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
+	AWeapon* GetEquippedWeapon();
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
