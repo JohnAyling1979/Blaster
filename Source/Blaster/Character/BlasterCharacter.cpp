@@ -39,6 +39,9 @@ ABlasterCharacter::ABlasterCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+
+	NetUpdateFrequency = 66.0f;
+	MinNetUpdateFrequency = 33.0f;
 }
 
 void ABlasterCharacter::PostInitializeComponents()
@@ -53,11 +56,6 @@ void ABlasterCharacter::PostInitializeComponents()
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if (OverlappingWeapon)
-	{
-		OverlappingWeapon->ShowPickupWidget(true);
-	}
-
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -94,9 +92,8 @@ void ABlasterCharacter::MoveForward(float Value)
 {
 	if (Controller && Value != 0.0f)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
+		const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X));
 		AddMovementInput(Direction, Value);
 	}
 }
@@ -105,9 +102,8 @@ void ABlasterCharacter::MoveRight(float Value)
 {
 	if (Controller && Value != 0.0f)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
+		const FVector Direction(FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y));
 		AddMovementInput(Direction, Value);
 	}
 }
@@ -176,7 +172,7 @@ void ABlasterCharacter::AimButtonReleased()
 
 void ABlasterCharacter::AimOffset(float DeltaTime)
 {
-	if (!Controller || !Combat || !Combat->EquippedWeapon)
+	if (Combat && Combat->EquippedWeapon == nullptr)
 	{
 		return;
 	}
@@ -188,7 +184,7 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 
 	if (Speed == 0.0f && !bIsInAir)
 	{
-		FRotator CurrentAimRotation = FRotator(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+		FRotator CurrentAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
 		FRotator DeltaAimRotator = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
 
 		AO_Yaw = DeltaAimRotator.Yaw;
@@ -202,8 +198,9 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 	}
 	if (Speed > 0.0f || bIsInAir)
 	{
-		StartingAimRotation = FRotator(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+		StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
 		AO_Yaw = 0.0f;
+
 		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
 
@@ -211,7 +208,9 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 
 	if (AO_Pitch > 90.0f)
 	{
-		AO_Pitch = AO_Pitch - 360.0f; // Convert to negative pitch
+		FVector2D InRange(270.f, 360.f);
+		FVector2D OutRange(-90.f, 0.f);
+		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
 	}
 }
 
@@ -234,7 +233,7 @@ void ABlasterCharacter::TurnInPlace(float DeltaTime)
 		if (FMath::Abs(AO_Yaw) < 15.0f)
 		{
 			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
-			StartingAimRotation = FRotator(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+			StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
 		}
 	}
 }
