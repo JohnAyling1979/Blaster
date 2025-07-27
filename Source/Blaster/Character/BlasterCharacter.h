@@ -22,6 +22,7 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
+	void PlayFireMontage(bool bAiming);
 	AWeapon* GetEquippedWeapon();
 	bool IsWeaponEquipped();
 	bool IsAiming();
@@ -41,6 +42,8 @@ protected:
 	void CrouchButtonPressed();
 	void AimButtonPressed();
 	void AimButtonReleased();
+	void FireButtonPressed();
+	void FireButtonReleased();
 	void AimOffset(float DeltaTime);
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -70,4 +73,7 @@ private:
 	FRotator StartingAimRotation;
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* FireWeaponMontage;
 };
