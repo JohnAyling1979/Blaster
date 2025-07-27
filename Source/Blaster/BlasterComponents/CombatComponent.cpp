@@ -111,7 +111,7 @@ void UCombatComponent::MulticastFire_Implementation()
 	}
 
 	Character->PlayFireMontage(bAiming);
-	EquippedWeapon->Fire();
+	EquippedWeapon->Fire(HitTarget);
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
@@ -154,5 +154,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 				FColor::Red
 			);
 		}
+
+		HitTarget = TraceHitResult.ImpactPoint;
 	}
 }

@@ -100,7 +100,7 @@ void AWeapon::SetWeaponState(EWeaponState State)
 	}
 }
 
-void AWeapon::Fire()
+void AWeapon::Fire(const FVector& HitTarget)
 {
 	if (FireAnimation)
 	{
