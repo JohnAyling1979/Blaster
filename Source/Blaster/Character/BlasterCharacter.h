@@ -26,6 +26,9 @@ public:
 	AWeapon* GetEquippedWeapon();
 	bool IsWeaponEquipped();
 	bool IsAiming();
+	FVector GetHitTarget() const;
+
+
 	FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
