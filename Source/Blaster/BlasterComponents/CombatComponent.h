@@ -59,9 +59,21 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float AimingWalkSpeed = 450.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ZoomedFOV = 30.0f;
+
+	float CurrentFOV;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ZoomInterpSpeed = 20.0f;
+
+	float DefaultFOV;
+
 	bool bFireButtonPressed;
 
 	float CrosshairVelocityFactor;
 	float CrosshairInAirFactor;
 	FVector HitTarget;
+
+	void InterpFOV(float DeltaTime);
 };
