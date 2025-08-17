@@ -65,6 +65,9 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
 
+	UPROPERTY(EditAnywhere)
+	float CameraThreshold = 200.f;
+
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
@@ -83,4 +86,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
+
+	void HideCameraIfCharacterClose();
 };

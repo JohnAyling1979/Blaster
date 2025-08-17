@@ -16,4 +16,6 @@ class BLASTER_API AStartGameMode : public AGameMode
 	
 public:
 	AStartGameMode();
+
+	virtual void BeginPlay() override;
 };
