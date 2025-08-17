@@ -193,11 +193,6 @@ void ABlasterCharacter::FireButtonPressed()
 	{
 		Combat->FireButtonPressed(true);
 	}
-	else
-	{
-		// Log or handle the case where no weapon is equipped
-		UE_LOG(LogTemp, Warning, TEXT("No weapon equipped to fire!"));
-	}
 }
 
 void ABlasterCharacter::FireButtonReleased()
@@ -205,11 +200,6 @@ void ABlasterCharacter::FireButtonReleased()
 	if (Combat && Combat->EquippedWeapon)
 	{
 		Combat->FireButtonPressed(false);
-	}
-	else
-	{
-		// Log or handle the case where no weapon is equipped
-		UE_LOG(LogTemp, Warning, TEXT("No weapon equipped to stop firing!"));
 	}
 }
 
