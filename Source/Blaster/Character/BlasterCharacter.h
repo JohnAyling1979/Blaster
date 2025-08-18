@@ -31,6 +31,8 @@ public:
 	bool IsAiming();
 	FVector GetHitTarget() const;
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
 
 	FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
@@ -68,9 +70,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;
 
-	UFUNCTION()
-	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
-
 	UPROPERTY(VisibleAnywhere, Category = Combat)
 	class UCombatComponent* Combat;
 
@@ -86,6 +85,14 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* HitReactMontage;
+
+	void PlayHitReactMontage();
+
+	UFUNCTION()
+	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
 	void HideCameraIfCharacterClose();
 };
