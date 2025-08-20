@@ -23,6 +23,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
+	virtual void OnRep_ReplicatedMovement() override;
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	void PlayFireMontage(bool bAiming);
@@ -38,6 +39,7 @@ public:
 	FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -54,6 +56,8 @@ protected:
 	void FireButtonPressed();
 	void FireButtonReleased();
 	void AimOffset(float DeltaTime);
+	void CalculateAO_Pitch();
+	void SimProxiesTurn();
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -81,13 +85,22 @@ private:
 	float AO_Pitch;
 	FRotator StartingAimRotation;
 	ETurningInPlace TurningInPlace;
-	void TurnInPlace(float DeltaTime);
+	bool bRotateRootBone;
+	float TurnThreshold = 1.0f;
+	FRotator ProxyRotationLastFrame;
+	FRotator ProxyRotation;
+	float ProxyYaw;
+	float TimeSinceLastMovementReplication;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* HitReactMontage;
+
+	float CalculateSpeed();
+
+	void TurnInPlace(float DeltaTime);
 
 	void PlayHitReactMontage();
 

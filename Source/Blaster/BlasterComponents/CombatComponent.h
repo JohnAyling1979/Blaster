@@ -34,6 +34,8 @@ protected:
 
 	void FireButtonPressed(bool bPressed);
 
+	void Fire();
+
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
 
@@ -82,4 +84,10 @@ private:
 	FHUDPackage HUDPackage;
 
 	void InterpFOV(float DeltaTime);
+
+	bool bCanFire = true;
+
+	FTimerHandle FireTimer;
+	void StartFireTimer();
+	void FireTimerFinished();
 };

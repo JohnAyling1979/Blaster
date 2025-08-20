@@ -39,6 +39,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Crosshairs")
 	class UTexture2D* CrosshairsBottom;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float FireDelay = .15f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	bool bAutomatic = true;
+
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Fire(const FVector& HitTarget);
