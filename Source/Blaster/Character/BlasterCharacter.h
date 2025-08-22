@@ -32,9 +32,6 @@ public:
 	bool IsAiming();
 	FVector GetHitTarget() const;
 
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
-
 	FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
@@ -43,6 +40,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	void UpdateHUDHealth();
 	virtual void Jump() override;
 
 	void MoveForward(float Value);
@@ -58,6 +56,16 @@ protected:
 	void AimOffset(float DeltaTime);
 	void CalculateAO_Pitch();
 	void SimProxiesTurn();
+
+	UFUNCTION()
+	void ReceiveDamage(
+		AActor* DamagedActor,
+		float Damage,
+		const UDamageType* DamageType, 
+		AController* InstigatorController, 
+		AActor* DamageCauser
+	);
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -70,6 +78,10 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
+
+	UFUNCTION()
+	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
+
 
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;
@@ -98,14 +110,22 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth = 100.f;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
+	float Health = 100.f;
+
+	UFUNCTION()
+	void OnRep_Health();
+
+	class ABlasterPlayerController* BlasterPlayerController;
+
 	float CalculateSpeed();
 
 	void TurnInPlace(float DeltaTime);
 
 	void PlayHitReactMontage();
-
-	UFUNCTION()
-	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
 	void HideCameraIfCharacterClose();
 };
