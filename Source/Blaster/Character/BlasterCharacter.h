@@ -27,17 +27,22 @@ public:
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	void PlayFireMontage(bool bAiming);
+	void PlayElimMontage();
 	AWeapon* GetEquippedWeapon();
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	FVector GetHitTarget() const;
 	void Elim();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastElim();
+
 	FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
+	FORCEINLINE bool IsElimmed() const { return bElimmed; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -111,6 +116,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* ElimMontage;
+
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
 
@@ -119,6 +127,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_Health();
+
+	bool bElimmed = false;
 
 	class ABlasterPlayerController* BlasterPlayerController;
 
@@ -129,4 +139,11 @@ private:
 	void PlayHitReactMontage();
 
 	void HideCameraIfCharacterClose();
+
+	FTimerHandle ElimTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
+
+	void ElimTimerFinished();
 };

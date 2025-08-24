@@ -19,4 +19,5 @@ public:
 		class ABlasterPlayerController* VictimController,
 		class ABlasterPlayerController* AttackerController
 	);
+	virtual void RequestRespawn(class ABlasterCharacter* ElimmedCharacter, class AController* ElimmedController);
 };
