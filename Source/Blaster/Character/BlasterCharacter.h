@@ -31,6 +31,7 @@ public:
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	FVector GetHitTarget() const;
+	void Elim();
 
 	FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
 	FORCEINLINE float GetAOPitch() const { return AO_Pitch; }

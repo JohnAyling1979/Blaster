@@ -13,6 +13,7 @@
 #include "BlasterAnimInstance.h"
 #include "Blaster/Blaster.h"
 #include "Blaster/PlayerController/BlasterPlayerController.h"
+#include "Blaster/GameMode/BlasterGameMode.h"
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -343,6 +344,20 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 	UpdateHUDHealth();
 	// Playing on the server
 	PlayHitReactMontage();
+
+	if (Health == 0.f)
+	{
+		ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+
+		if (BlasterGameMode)
+		{
+			BlasterPlayerController = BlasterPlayerController ? BlasterPlayerController : Cast<ABlasterPlayerController>(GetController());
+			ABlasterPlayerController* AttackerController = Cast<ABlasterPlayerController>(InstigatorController);
+
+			BlasterGameMode->PlayerEliminated(this, BlasterPlayerController, AttackerController);
+		}
+
+	}
 }
 
 void ABlasterCharacter::OnRep_Health()
@@ -502,4 +517,8 @@ FVector ABlasterCharacter::GetHitTarget() const
 	}
 
 	return Combat->HitTarget;
+}
+
+void ABlasterCharacter::Elim()
+{
 }
