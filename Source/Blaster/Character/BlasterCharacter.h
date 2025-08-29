@@ -21,6 +21,8 @@ class BLASTER_API ABlasterCharacter : public ACharacter, public IInteractWithCro
 public:
 	ABlasterCharacter();
 	virtual void Tick(float DeltaTime) override;
+	virtual void Destroyed() override;
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
@@ -169,4 +171,16 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
+
+	/**
+	* Elim Bot
+	*/
+	UPROPERTY(EditAnywhere, Category = Elim)
+	UParticleSystem* ElimBotEffect;
+
+	UPROPERTY(VisibleAnywhere, Category = Elim)
+	UParticleSystemComponent* ElimBotComponent;
+
+	UPROPERTY(EditAnywhere, Category = Elim)
+	class USoundCue* ElimBotSound;
 };
