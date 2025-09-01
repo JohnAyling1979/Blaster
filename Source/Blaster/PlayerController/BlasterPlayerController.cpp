@@ -58,3 +58,18 @@ void ABlasterPlayerController::SetHUDScore(float Score)
 		BlasterHUD->CharacterOverlay->ScoreText->SetText(FText::FromString(ScoreText));
 	}
 }
+
+void ABlasterPlayerController::SetHUDDeaths(int32 Deaths)
+{
+	BlasterHUD = BlasterHUD ? BlasterHUD : Cast<ABlasterHUD>(GetHUD());
+
+	bool bIsValidHUD = BlasterHUD &&
+		BlasterHUD->CharacterOverlay &&
+		BlasterHUD->CharacterOverlay->DeathsText;
+
+	if (bIsValidHUD)
+	{
+		FString DeathsText = FString::Printf(TEXT("Deaths: %d"), Deaths);
+		BlasterHUD->CharacterOverlay->DeathsText->SetText(FText::FromString(DeathsText));
+	}
+}

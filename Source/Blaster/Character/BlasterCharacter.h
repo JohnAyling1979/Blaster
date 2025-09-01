@@ -136,6 +136,7 @@ private:
 
 	bool bElimmed = false;
 
+	UPROPERTY()
 	class ABlasterPlayerController* BlasterPlayerController;
 
 	float CalculateSpeed();
@@ -187,5 +188,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = Elim)
 	class USoundCue* ElimBotSound;
 
+	UPROPERTY()
 	class ABlasterPlayerState* BlasterPlayerState;
 };
