@@ -46,6 +46,8 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 	FORCEINLINE bool IsElimmed() const { return bElimmed; }
+	FORCEINLINE float GetHealth() const { return Health; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -65,6 +67,7 @@ protected:
 	void AimOffset(float DeltaTime);
 	void CalculateAO_Pitch();
 	void SimProxiesTurn();
+	void PollInit();
 
 	UFUNCTION()
 	void ReceiveDamage(
@@ -183,4 +186,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Elim)
 	class USoundCue* ElimBotSound;
+
+	class ABlasterPlayerState* BlasterPlayerState;
 };

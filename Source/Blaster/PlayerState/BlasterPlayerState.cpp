@@ -1,0 +1,44 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "BlasterPlayerState.h"
+#include "Blaster/Character/BlasterCharacter.h"
+#include "Blaster/PlayerController/BlasterPlayerController.h"
+
+void ABlasterPlayerState::AddToScore(float ScoreAmount)
+{
+	SetScore(GetScore() + ScoreAmount);
+
+	Character = Character == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : Character;
+
+	if (!Character) {
+		return;
+	}
+
+	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+
+	if (!Controller) {
+		return;
+	}
+
+	Controller->SetHUDScore(GetScore());
+}
+
+void ABlasterPlayerState::OnRep_Score()
+{
+	Super::OnRep_Score();
+
+	Character = Character == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : Character;
+
+	if (!Character) {
+		return;
+	}
+
+	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+
+	if (!Controller) {
+		return;
+	}
+
+	Controller->SetHUDScore(GetScore());
+}
