@@ -46,10 +46,12 @@ public:
 	bool bAutomatic = true;
 
 	virtual void Tick(float DeltaTime) override;
+	virtual void OnRep_Owner() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Fire(const FVector& HitTarget);
 	void ShowPickupWidget(bool bShowWidget);
 	void SetWeaponState(EWeaponState State);
+	void SetHUDAmmo();
 	void Dropped();
 
 	FORCEINLINE EWeaponState GetWeaponState() const { return WeaponState; }
@@ -77,6 +79,11 @@ protected:
 		int32 OtherBodyIndex
 	);
 private:
+	UPROPERTY()
+	class ABlasterCharacter* BlasterOwnerCharacter;
+	UPROPERTY()
+	class ABlasterPlayerController* BlasterOwnerController;
+
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
@@ -101,6 +108,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float ZoomInterpSpeed = 20.f;
 
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo, Category = "Weapon Properties")
+	int32 Ammo = 30;
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	int32 MagCapacity = 30;
+
 	UFUNCTION()
 	void OnRep_WeaponState();
+
+	UFUNCTION()
+	void OnRep_Ammo();
+
+	void SpendRound();
 };

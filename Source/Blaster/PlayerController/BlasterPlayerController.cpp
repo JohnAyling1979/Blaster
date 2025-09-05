@@ -73,3 +73,18 @@ void ABlasterPlayerController::SetHUDDeaths(int32 Deaths)
 		BlasterHUD->CharacterOverlay->DeathsText->SetText(FText::FromString(DeathsText));
 	}
 }
+
+void ABlasterPlayerController::SetHUDWeaponAmmo(int32 Ammo)
+{
+	BlasterHUD = BlasterHUD ? BlasterHUD : Cast<ABlasterHUD>(GetHUD());
+
+	bool bIsValidHUD = BlasterHUD &&
+		BlasterHUD->CharacterOverlay &&
+		BlasterHUD->CharacterOverlay->WeaponAmmoText;
+
+	if (bIsValidHUD)
+	{
+		FString AmmoText = FString::Printf(TEXT("Ammo: %d"), Ammo);
+		BlasterHUD->CharacterOverlay->WeaponAmmoText->SetText(FText::FromString(AmmoText));
+	}
+}
