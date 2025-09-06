@@ -53,6 +53,7 @@ public:
 	void SetWeaponState(EWeaponState State);
 	void SetHUDAmmo();
 	void Dropped();
+	bool IsEmpty();
 
 	FORCEINLINE EWeaponState GetWeaponState() const { return WeaponState; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }

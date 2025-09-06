@@ -93,4 +93,11 @@ private:
 	FTimerHandle FireTimer;
 	void StartFireTimer();
 	void FireTimerFinished();
+	bool CanFire();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
+	int32 CarriedAmmo;
+
+	UFUNCTION()
+	void OnRep_CarriedAmmo();
 };

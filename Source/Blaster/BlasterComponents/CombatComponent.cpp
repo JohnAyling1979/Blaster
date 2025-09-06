@@ -25,6 +25,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
+	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 }
 
 void UCombatComponent::BeginPlay()
@@ -302,18 +303,17 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 
 void UCombatComponent::Fire()
 {
-	if (!bCanFire)
+	if (CanFire())
 	{
-		return;
-	}
-	bCanFire = false;
-	ServerFire(HitTarget);
+		bCanFire = false;
+		ServerFire(HitTarget);
 
-	if (EquippedWeapon)
-	{
-		CrosshairShootingFactor += 0.75f;
+		if (EquippedWeapon)
+		{
+			CrosshairShootingFactor += 0.75f;
+		}
+		StartFireTimer();
 	}
-	StartFireTimer();
 }
 
 void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
@@ -379,4 +379,18 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			HUDPackage.CrosshairColor = FLinearColor::White;
 		}
 	}
+}
+
+bool UCombatComponent::CanFire()
+{
+	if (EquippedWeapon == nullptr)
+	{
+		return false;
+	}
+
+	return !EquippedWeapon->IsEmpty() || !bCanFire;
+}
+
+void UCombatComponent::OnRep_CarriedAmmo()
+{
 }
