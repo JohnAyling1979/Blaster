@@ -8,6 +8,7 @@
 #include "Blaster/BlasterTypes/TurningInPlace.h"
 #include "Blaster/Interfaces/InteractWithCrosshairsInterface.h"
 #include "Components/TimelineComponent.h"
+#include "Blaster/BlasterTypes/CombatState.h"
 
 #include "BlasterCharacter.generated.h"
 
@@ -37,6 +38,7 @@ public:
 	bool IsAiming();
 	FVector GetHitTarget() const;
 	void Elim();
+	ECombatState GetCombatState() const;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim();
@@ -100,7 +102,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float CameraThreshold = 200.f;
 
-	UPROPERTY(VisibleAnywhere, Category = Combat)
+	UPROPERTY(VisibleAnywhere, Category = Combat, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatComponent* Combat;
 
 	UFUNCTION(Server, Reliable)
