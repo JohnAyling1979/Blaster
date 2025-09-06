@@ -1,5 +1,5 @@
 #include "CombatComponent.h"
-#include "Blaster/Weapom/Weapon.h"
+#include "Blaster/Weapon/Weapon.h"
 #include "Blaster/Character/BlasterCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/SphereComponent.h"

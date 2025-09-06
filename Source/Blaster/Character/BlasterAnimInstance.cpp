@@ -5,7 +5,7 @@
 #include "BlasterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Blaster/Weapom/Weapon.h"
+#include "Blaster/weapon/Weapon.h"
 
 void UBlasterAnimInstance::NativeInitializeAnimation()
 {
