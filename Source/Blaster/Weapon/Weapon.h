@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Animation/AnimationAsset.h"
+#include "WeaponTypes.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -60,6 +61,7 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE float GetZoomedFOV() const { return ZoomedFOV; }
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
+	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
@@ -87,6 +89,9 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
+
+	UPROPERTY(EditAnywhere)
+	EWeaponType WeaponType;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class USkeletalMeshComponent* WeaponMesh;
