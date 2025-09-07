@@ -623,6 +623,9 @@ void ABlasterCharacter::MulticastElim_Implementation()
 	if (BlasterPlayerController)
 	{
 		BlasterPlayerController->SetHUDWeaponAmmo(0);
+		BlasterPlayerController->SetHUDCarriedAmmo(0);
+		BlasterPlayerController->SetHUDWeaponType(EWeaponType::EWT_None);
+
 	}
 
 	bElimmed = true;

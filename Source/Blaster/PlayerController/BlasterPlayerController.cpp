@@ -74,6 +74,33 @@ void ABlasterPlayerController::SetHUDDeaths(int32 Deaths)
 	}
 }
 
+void ABlasterPlayerController::SetHUDWeaponType(EWeaponType WeaponType)
+{
+	BlasterHUD = BlasterHUD ? BlasterHUD : Cast<ABlasterHUD>(GetHUD());
+
+	bool bIsValidHUD = BlasterHUD &&
+		BlasterHUD->CharacterOverlay &&
+		BlasterHUD->CharacterOverlay->WeaponType;
+
+	if (bIsValidHUD)
+	{
+		FString WeaponTypeString;
+
+		switch (WeaponType)
+		{
+		case EWeaponType::EWT_AssaultRifle:
+			WeaponTypeString = FString("Assault Rifle");
+			break;
+		default:
+			WeaponTypeString = FString("");
+			break;
+		}
+
+
+		BlasterHUD->CharacterOverlay->WeaponType->SetText(FText::FromString(WeaponTypeString));
+	}
+}
+
 void ABlasterPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 {
 	BlasterHUD = BlasterHUD ? BlasterHUD : Cast<ABlasterHUD>(GetHUD());
