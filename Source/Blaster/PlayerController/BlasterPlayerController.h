@@ -26,7 +26,9 @@ public:
 	void SetHUDMatchCountdown(float CountdownTime);
 	void SetHUDAnnouncementCountdown(float CountdownTime);
 	void OnMatchStateSet(FName State);
+
 	void HandleMatchHasStarted();
+	void HandleCooldown();
 
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaTime) override;
@@ -52,7 +54,7 @@ protected:
 	void ServerCheckMatchState();
 
 	UFUNCTION(Client, Reliable)
-	void ClientJoinGame(FName StateOfMatch, float Warmup, float Match, float StartingTime);
+	void ClientJoinGame(FName StateOfMatch, float StartingTime, float Warmup, float Match, float Cooldown);
 
 	float ClientServerDelta = 0.f;
 
@@ -68,6 +70,7 @@ private:
 	float LevelStartingTime = 0.f;
 	float WarmupTime = 0.f;
 	float MatchTime = 0.f;
+	float CooldownTime = 0.f;
 	uint32 CoutdownInt = 0;
 
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
