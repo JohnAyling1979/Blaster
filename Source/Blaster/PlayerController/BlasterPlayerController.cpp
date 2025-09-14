@@ -10,17 +10,14 @@
 #include "Net/UnrealNetwork.h"
 #include "Blaster/GameMode/BlasterGameMode.h"
 #include "Blaster/HUD/Announcement.h"
+#include "Kismet/GameplayStatics.h"
 
 void ABlasterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	BlasterHUD = Cast<ABlasterHUD>(GetHUD());
-
-	if (BlasterHUD)
-	{
-		BlasterHUD->AddAnnouncement();
-	}
+	ServerCheckMatchState();
 }
 
 void ABlasterPlayerController::PollInit()
@@ -61,10 +58,42 @@ void ABlasterPlayerController::CheckTimeSync(float DeltaTime)
 {
 	TimeSyncRunningTime += DeltaTime;
 
-	if (IsLocalController() && TimeSyncRunningTime >= TimeSyncFrequency)
+	if (IsLocalController() && (TimeSyncRunningTime >= TimeSyncFrequency || LevelStartingTime == 0.f))
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 		TimeSyncRunningTime = 0.f;
+	}
+}
+
+void ABlasterPlayerController::ServerCheckMatchState_Implementation()
+{
+	ABlasterGameMode* GameMode =Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
+
+	if (GameMode)
+	{
+		LevelStartingTime = GameMode->LevelStartingTime;
+		WarmupTime = GameMode->WarmupTime;
+		MatchTime = GameMode->MatchTime;
+
+		MatchState = GameMode->GetMatchState();
+
+		ClientJoinGame(MatchState, WarmupTime, MatchTime, LevelStartingTime);
+	}
+}
+
+void ABlasterPlayerController::ClientJoinGame_Implementation(FName StateOfMatch, float Warmup, float Match, float StartingTime)
+{
+	LevelStartingTime = StartingTime;
+	WarmupTime = Warmup;
+	MatchTime = Match;
+
+	MatchState = StateOfMatch;
+
+	OnMatchStateSet(MatchState);
+
+	if (BlasterHUD && MatchState == MatchState::WaitingToStart)
+	{
+		BlasterHUD->AddAnnouncement();
 	}
 }
 
@@ -261,38 +290,77 @@ void ABlasterPlayerController::SetHUDMatchCountdown(float CountdownTime)
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
 		int32 Seconds = FMath::FloorToInt(CountdownTime - Minutes * 60);
 
-		FString MatchCountdownText = FString::Printf(TEXT("Score: %02d:%02d"), Minutes, Seconds);
+		FString MatchCountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		BlasterHUD->CharacterOverlay->MatchCountdownText->SetText(FText::FromString(MatchCountdownText));
+	}
+}
+
+void ABlasterPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
+{
+	BlasterHUD = BlasterHUD ? BlasterHUD : Cast<ABlasterHUD>(GetHUD());
+
+	bool bIsValidHUD = BlasterHUD &&
+		BlasterHUD->Announcement &&
+		BlasterHUD->Announcement->WarmupTime;
+
+	if (bIsValidHUD)
+	{
+		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
+		int32 Seconds = FMath::FloorToInt(CountdownTime - Minutes * 60);
+
+		FString MatchCountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		BlasterHUD->Announcement->WarmupTime->SetText(FText::FromString(MatchCountdownText));
 	}
 }
 
 void ABlasterPlayerController::SetHUDTime()
 {
-	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
-
-	if (CoutdownInt != SecondsLeft)
+	if (MatchState == MatchState::WaitingToStart)
 	{
-		SetHUDMatchCountdown(SecondsLeft);
-	}
+		float TimeLeft = WarmupTime - (GetServerTime() - LevelStartingTime);
+		uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 
-	CoutdownInt = SecondsLeft;
+		if (CoutdownInt != SecondsLeft)
+		{
+			SetHUDAnnouncementCountdown(TimeLeft);
+
+			CoutdownInt = SecondsLeft;
+		}
+	}
+	else if (MatchState == MatchState::InProgress)
+	{
+		float TimeLeft = MatchTime - (GetServerTime() - LevelStartingTime) + WarmupTime;
+		uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
+
+		if (CoutdownInt != SecondsLeft)
+		{
+			SetHUDMatchCountdown(TimeLeft);
+
+			CoutdownInt = SecondsLeft;
+		}
+	}
 }
 
 void ABlasterPlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)
 {
+	ABlasterGameMode* GameMode = Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this));
 	float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();
+	if (GameMode)
+	{
+		LevelStartingTime = GameMode->LevelStartingTime;
+	}
 
-	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfReceipt);
+
+	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfReceipt, LevelStartingTime);
 }
 
-void ABlasterPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)
+void ABlasterPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest, float ServerLevelStartTime)
 {
 	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
 	float CurrentServerTime = TimeServerReceivedClientRequest + (0.5f * RoundTripTime);
 
+	LevelStartingTime = ServerLevelStartTime;
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
-	
-	UE_LOG(LogTemp, Warning, TEXT("RoundTripTime: %f CurrentServerTime: %f"), RoundTripTime, CurrentServerTime);
 }
 
 float ABlasterPlayerController::GetServerTime()
