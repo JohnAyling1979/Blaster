@@ -39,6 +39,8 @@ public:
 	FVector GetHitTarget() const;
 	void Elim();
 	ECombatState GetCombatState() const;
+	UPROPERTY(Replicated)
+	bool bDisableGameplay = false;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim();
@@ -51,6 +53,7 @@ public:
 	FORCEINLINE bool IsElimmed() const { return bElimmed; }
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+	FORCEINLINE class UCombatComponent* GetCombat() const { return Combat; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -72,6 +75,7 @@ protected:
 	void CalculateAO_Pitch();
 	void SimProxiesTurn();
 	void PollInit();
+	void RotateInPlace(float DeltaTime);
 
 	UFUNCTION()
 	void ReceiveDamage(

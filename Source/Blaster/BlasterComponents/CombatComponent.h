@@ -23,20 +23,20 @@ public:
 
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 	void Reload();
+	void FireButtonPressed(bool bPressed);
+	void SetAiming(bool bIsAming);
+
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 
 protected:
 	virtual void BeginPlay() override;
-	void SetAiming(bool bIsAming);
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetAiming(bool bIsAiming);
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
-
-	void FireButtonPressed(bool bPressed);
 
 	void Fire();
 

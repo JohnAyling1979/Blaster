@@ -11,6 +11,7 @@
 #include "Blaster/GameMode/BlasterGameMode.h"
 #include "Blaster/HUD/Announcement.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blaster/BlasterComponents/CombatComponent.h"
 
 void ABlasterPlayerController::BeginPlay()
 {
@@ -186,6 +187,20 @@ void ABlasterPlayerController::HandleCooldown()
 			{
 				BlasterHUD->Announcement->InfoText->SetText(FText());
 			}
+		}
+	}
+
+	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
+
+	if (BlasterCharacter)
+	{
+		BlasterCharacter->bDisableGameplay = true;
+
+		UCombatComponent* Combat = BlasterCharacter->GetCombat();
+		if (Combat)
+		{
+			Combat->FireButtonPressed(false);
+			Combat->SetAiming(false);
 		}
 	}
 }
