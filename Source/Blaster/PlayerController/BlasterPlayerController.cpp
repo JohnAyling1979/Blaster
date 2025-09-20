@@ -12,6 +12,8 @@
 #include "Blaster/HUD/Announcement.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blaster/BlasterComponents/CombatComponent.h"
+#include "Blaster/GameState/BlasterGameState.h"
+#include "Blaster/PlayerState/BlasterPlayerState.h"
 
 void ABlasterPlayerController::BeginPlay()
 {
@@ -166,6 +168,7 @@ void ABlasterPlayerController::HandleMatchHasStarted()
 void ABlasterPlayerController::HandleCooldown()
 {
 	BlasterHUD = BlasterHUD ? BlasterHUD : Cast<ABlasterHUD>(GetHUD());
+
 	if (BlasterHUD)
 	{
 		if (BlasterHUD->CharacterOverlay)
@@ -185,7 +188,41 @@ void ABlasterPlayerController::HandleCooldown()
 
 			if (BlasterHUD->Announcement->InfoText)
 			{
-				BlasterHUD->Announcement->InfoText->SetText(FText());
+				ABlasterGameState* BlasterGameState =Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
+				ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
+				FString InfoTextString = "";
+
+				if (BlasterGameState && BlasterPlayerState)
+				{
+					TArray<ABlasterPlayerState*> TopPlayers = BlasterGameState->TopScoringPlayers;
+
+					if (TopPlayers.Num() == 0)
+					{
+						InfoTextString = FString("There is no winner");
+					}
+					else if (TopPlayers.Num() == 1)
+					{
+						if (TopPlayers[0] == BlasterPlayerState)
+						{
+							InfoTextString = FString("You are the winner!");
+						}
+						else
+						{
+							InfoTextString = FString::Printf(TEXT("Winner: %s"), *TopPlayers[0]->GetPlayerName());
+						}
+					}
+					else
+					{
+						InfoTextString = FString("Players tied for the win:\n");
+
+						for (ABlasterPlayerState* PS : TopPlayers)
+						{
+							InfoTextString.Append(FString::Printf(TEXT("%s\n"), *PS->GetPlayerName()));
+						}
+					}
+				}
+
+				BlasterHUD->Announcement->InfoText->SetText(FText::FromString(InfoTextString));
 			}
 		}
 	}
