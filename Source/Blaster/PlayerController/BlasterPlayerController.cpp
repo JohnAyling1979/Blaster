@@ -156,7 +156,10 @@ void ABlasterPlayerController::HandleMatchHasStarted()
 
 	if (BlasterHUD)
 	{
-		BlasterHUD->AddCharacterOverlay();
+		if (BlasterHUD->CharacterOverlay == nullptr)
+		{
+			BlasterHUD->AddCharacterOverlay();
+		}
 
 		if (BlasterHUD->Announcement)
 		{
@@ -321,6 +324,9 @@ void ABlasterPlayerController::SetHUDWeaponType(EWeaponType WeaponType)
 		{
 		case EWeaponType::EWT_AssaultRifle:
 			WeaponTypeString = FString("Assault Rifle");
+			break;
+		case EWeaponType::EWT_RocketLauncher:
+			WeaponTypeString = FString("Rocket Launcher");
 			break;
 		default:
 			WeaponTypeString = FString("");

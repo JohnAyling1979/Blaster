@@ -714,6 +714,7 @@ void ABlasterCharacter::MulticastElim_Implementation()
 	StartDissolve();
 
 	bDisableGameplay = true;
+	GetCharacterMovement()->DisableMovement();
 
 	if (Combat)
 	{
